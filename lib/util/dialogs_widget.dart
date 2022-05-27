@@ -1,24 +1,26 @@
   import 'package:flutter/material.dart';
-import 'package:todo_list/util/color_theme.dart';
+import 'package:task_list/main_app/main_app_controller.dart';
+import 'package:task_list/util/color_theme.dart';
 
   Widget dialogDeleteAllTasksConfirmation(BuildContext context){
     return SimpleDialog(
       contentPadding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+      backgroundColor: ColorsApp.dialogColor,
       children: [
-        const Text("Aviso", textAlign: TextAlign.center, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+        Text("Aviso", textAlign: TextAlign.center, style: TextStyle(fontSize: 18, color: ColorsApp.secondaryColor, fontWeight: FontWeight.w600)),
         const SizedBox(height: 16),
-        const Text("Você deseja mesmo excluir todas as tarefas? Esta ação é irreversível.", textAlign: TextAlign.center, style: TextStyle(fontSize: 16)),
+        Text("Você deseja mesmo excluir todas as tarefas? Esta ação é irreversível.", textAlign: TextAlign.center, style: TextStyle(fontSize: 16, color: ColorsApp.secondaryColor)),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              style: TextButton.styleFrom(fixedSize: const Size(80, 0)),
-              child: Text("NÃO", textAlign: TextAlign.center, style: TextStyle(color: Colors.grey[800])),
+              style: TextButton.styleFrom(fixedSize: const Size(80, 0), primary: Colors.red),
+              child: Text("NÃO", textAlign: TextAlign.center, style: TextStyle(color: ColorsApp.secondaryColor)),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(fixedSize: const Size(80, 0), primary: Colors.black),
+              style: ElevatedButton.styleFrom(fixedSize: const Size(80, 0), primary: ColorsApp.widgetsColor),
               child: const Text("SIM", textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
               onPressed: () => Navigator.pop(context, true),
             ),
@@ -28,40 +30,75 @@ import 'package:todo_list/util/color_theme.dart';
     );
   }
 
-  Widget dialogOpenSettings(BuildContext context){
-    return SimpleDialog(
-      contentPadding: const EdgeInsets.all(12),
-      children: [
-        const Text("Configurações", textAlign: TextAlign.center, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 16),
-        const Text("Escolha um tema", style: TextStyle(fontSize: 16)),
-        Row(
-          children: [
-            SizedBox(
-              width: 45,
-              height: 45,
-              child: RadioListTile<ColorTheme>(
-                contentPadding: const EdgeInsets.all(0),
-                value: ColorTheme.white,
-                groupValue: ColorsApp.colorAppTheme,
-                onChanged: (colorTheme) => ColorsApp.colorAppTheme = colorTheme!,
-              ),
-            ),
-            const Text("Claro"),
-            const SizedBox(width: 32),
-            SizedBox(
-              height: 45,
-              width: 45,
-              child: RadioListTile<ColorTheme>(
-                contentPadding: const EdgeInsets.all(0),
-                value: ColorTheme.dark,
-                groupValue: ColorsApp.colorAppTheme,
-                onChanged: (colorTheme) => ColorsApp.colorAppTheme = colorTheme!,
+  class DialogOpenSettings extends StatefulWidget {
+    const DialogOpenSettings({Key? key}) : super(key: key);
+
+    @override
+    State<DialogOpenSettings> createState() => _DialogOpenSettingsState();
+  }
+  
+  class _DialogOpenSettingsState extends State<DialogOpenSettings> {
+    @override
+    Widget build(BuildContext context) {
+      return SimpleDialog(
+        backgroundColor: ColorsApp.dialogColor,
+        contentPadding: const EdgeInsets.all(12),
+        children: [
+          Text("Configurações", textAlign: TextAlign.center, style: TextStyle(fontSize: 18, color: ColorsApp.secondaryColor, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 16),
+          Text("Escolha um tema", style: TextStyle(fontSize: 16, color: ColorsApp.secondaryColor)),
+          const SizedBox(height: 4),
+          Column(
+            children: [
+              InkWell(
+                onTap: () => setState(() => MainController().chooseAppTheme(ColorTheme.white)),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 45,
+                      child: RadioListTile<ColorTheme>(
+                        activeColor: ColorsApp.widgetsColor,
+                        contentPadding: const EdgeInsets.all(0),
+                        value: ColorTheme.white,
+                        groupValue: ColorsApp.colorAppTheme,
+                        onChanged: (theme) => setState(() => MainController().chooseAppTheme(theme!)),
+                      ),
+                    ),
+                    Text("Claro", style: TextStyle(color: ColorsApp.secondaryColor)),
+                  ],
                 ),
-            ),
-            const Text("Escuro"),
-          ],
-        ),
-      ],
-    );
+              ),
+              InkWell(
+                onTap: () => setState(() => MainController().chooseAppTheme(ColorTheme.dark)),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 45,
+                      child: RadioListTile<ColorTheme>(
+                        activeColor: ColorsApp.widgetsColor,
+                        contentPadding: const EdgeInsets.all(0),
+                        value: ColorTheme.dark,
+                        groupValue: ColorsApp.colorAppTheme,
+                        onChanged: (theme) => setState(() => MainController().chooseAppTheme(theme!)),
+                      ),
+                    ),
+                    Text("Escuro", style: TextStyle(color: ColorsApp.secondaryColor)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                style: TextButton.styleFrom(fixedSize: const Size(80, 0), primary: Colors.red),
+                child: Text("OK", textAlign: TextAlign.end, style: TextStyle(color: ColorsApp.secondaryColor)),
+              ),
+            ],
+          ),
+        ],
+      );
+    }
   }

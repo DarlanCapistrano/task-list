@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:todo_list/task/task_controller.dart';
-import 'package:todo_list/task/task_model.dart';
-import 'package:todo_list/util/dialogs_widget.dart';
+import 'package:task_list/main_app/main_app_controller.dart';
+import 'package:task_list/task/task_controller.dart';
+import 'package:task_list/task/task_model.dart';
+import 'package:task_list/util/color_theme.dart';
+import 'package:task_list/util/dialogs_widget.dart';
 
 class TaskPage extends StatefulWidget {
   const TaskPage({Key? key}) : super(key: key);
@@ -21,9 +23,21 @@ class _TaskPageState extends State<TaskPage> {
 
   @override
   Widget build(BuildContext context) {
+    return streamAppTheme(context);
+  }
+
+  Widget streamAppTheme(BuildContext context){
+    return StreamBuilder(
+      stream: MainController().controllerAppTheme.stream,
+      builder: (context, snapshot) => bodyTaskPage(context),
+    );
+  }
+
+  Widget bodyTaskPage(BuildContext context){
     return SafeArea(
+      top: false,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: ColorsApp.primaryColor,
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -43,13 +57,10 @@ class _TaskPageState extends State<TaskPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text("Minhas Tarefas", style: TextStyle(fontSize: 28, color: Colors.black)),
+        Text("Minhas Tarefas", style: TextStyle(fontSize: 28, color: ColorsApp.secondaryColor)),
         IconButton(
-          onPressed: () async {
-            await showDialog(context: context, builder: (_) => dialogOpenSettings(context));
-            setState(() {});
-          },
-          icon: const Icon(Icons.settings, color: Colors.black),
+          onPressed: () async => await showDialog(context: context, builder: (_) => const DialogOpenSettings()),
+          icon: Icon(Icons.settings, color: ColorsApp.secondaryColor),
         ),
       ],
     );
@@ -62,10 +73,14 @@ class _TaskPageState extends State<TaskPage> {
         children: [
           Expanded(
             child: TextField(
+              cursorColor: ColorsApp.widgetsColor,
               controller: _taskController.textTaskController,
-              decoration: const InputDecoration(
+              style: TextStyle(color: ColorsApp.secondaryColor),
+              decoration: InputDecoration(
                 labelText: "Adicione uma tarefa",
-                border: OutlineInputBorder(),
+                labelStyle: TextStyle(color: ColorsApp.secondaryColor),
+                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorsApp.secondaryColor)),
+                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorsApp.secondaryColor)),
               ),
             ),
           ),
@@ -73,7 +88,7 @@ class _TaskPageState extends State<TaskPage> {
           ElevatedButton(
             onPressed: () => _taskController.addTask(context),
             child: const Icon(Icons.add),
-            style: ElevatedButton.styleFrom(fixedSize: const Size(60, 60)),
+            style: ElevatedButton.styleFrom(primary: ColorsApp.widgetsColor, fixedSize: const Size(60, 60)),
           ),
         ],
       ),
@@ -128,13 +143,15 @@ class _TaskPageState extends State<TaskPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(toDo.date),
+                    Text(toDo.date, style: TextStyle(color: ColorsApp.tertiaryColor)),
                     const SizedBox(height: 4),
-                    Text(toDo.task, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: toDo.done ? Colors.green[600] : Colors.grey[800], decoration: toDo.done ? TextDecoration.lineThrough : null)),
+                    Text(toDo.task, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: toDo.done ? Colors.green[600] : ColorsApp.secondaryColor, decoration: toDo.done ? TextDecoration.lineThrough : null)),
                   ],
                 ),
               ),
               Checkbox(
+                side: BorderSide(color: ColorsApp.tertiaryColor, width: 2),
+                activeColor: ColorsApp.widgetsColor,
                 value: toDo.editing,
                 onChanged: (newValue) => _taskController.selectTaskItem(toDo, newValue),
               ),
@@ -152,8 +169,12 @@ class _TaskPageState extends State<TaskPage> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("${doneTasks.length} de ${tasks.length} tarefas concluídas", style: TextStyle(fontSize: 16, color: Colors.grey[600])),
-          ElevatedButton(onPressed: () => tasks.isEmpty ? null : _taskController.deleteAllTasks(context), child: const Text("Limpar tudo")),
+          Text("${doneTasks.length} de ${tasks.length} tarefas concluídas", style: TextStyle(fontSize: 16, color: ColorsApp.tertiaryColor)),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(primary: ColorsApp.widgetsColor),
+            onPressed: () => tasks.isEmpty ? null : _taskController.deleteAllTasks(context),
+            child: const Text("Limpar tudo"),
+          ),
         ],
       );
     } else{
@@ -162,10 +183,11 @@ class _TaskPageState extends State<TaskPage> {
         children: [
           TextButton(
             style: TextButton.styleFrom(fixedSize: const Size(80, 0)),
-            child: Text("Excluir", textAlign: TextAlign.center, style: TextStyle(color: Colors.grey[800])),
+            child: Text("Excluir", textAlign: TextAlign.center, style: TextStyle(color: ColorsApp.secondaryColor)),
             onPressed: tasks.isEmpty ? null : () => _taskController.deleteSelectedTasks(context, tasks, selectedTasks),
           ),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(primary: ColorsApp.widgetsColor),
             child: const Text("Concluir"),
             onPressed: () => tasks.isEmpty ? null : _taskController.completeSelectedTasks(tasks, selectedTasks),
           ),

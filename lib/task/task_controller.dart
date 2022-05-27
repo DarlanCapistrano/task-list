@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:todo_list/task/task_model.dart';
-import 'package:todo_list/util/dialogs_widget.dart';
+import 'package:task_list/task/task_model.dart';
+import 'package:task_list/util/color_theme.dart';
+import 'package:task_list/util/dialogs_widget.dart';
 
 class TaskController {
 
@@ -40,14 +41,19 @@ class TaskController {
       updatedTasks.remove(task);
     }
     _controllerTasks.sink.add(updatedTasks);
+    _controllerSelectedTasks.sink.add([]);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 5),
-        backgroundColor: Colors.black,
-        content: const Text("Tarefas excluídas com sucesso!"),
+        backgroundColor: ColorsApp.secondaryColor,
+        content: Text("Tarefas excluídas com sucesso!", style: TextStyle(color: ColorsApp.primaryColor)),
         action: SnackBarAction(
+          textColor: ColorsApp.widgetsColor,
           label: "Desfazer",
-          onPressed: () => _controllerTasks.sink.add(oldTasks),
+          onPressed: () {
+            _controllerTasks.sink.add(oldTasks);
+            _controllerSelectedTasks.sink.add(selectedTasks);
+          },
         ),
       ),
     );
