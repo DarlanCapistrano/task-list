@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_list/task/ui/task_page.dart';
+import 'package:my_tasks/my_tasks/ui/my_tasks_page.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({Key? key}) : super(key: key);
@@ -8,7 +8,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: TaskPage(),
+      home: MyTasksPage(),
     );
   }
 }

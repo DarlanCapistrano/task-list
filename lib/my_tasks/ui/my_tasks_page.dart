@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:task_list/main_app/main_app_controller.dart';
-import 'package:task_list/task/task_controller.dart';
-import 'package:task_list/task/task_model.dart';
-import 'package:task_list/util/color_theme.dart';
-import 'package:task_list/util/dialogs_widget.dart';
+import 'package:my_tasks/main_app/main_app_controller.dart';
+import 'package:my_tasks/my_tasks/my_tasks_controller.dart';
+import 'package:my_tasks/my_tasks/my_tasks_model.dart';
+import 'package:my_tasks/util/color_theme.dart';
+import 'package:my_tasks/util/dialogs_widget.dart';
 
-class TaskPage extends StatefulWidget {
-  const TaskPage({Key? key}) : super(key: key);
+class MyTasksPage extends StatefulWidget {
+  const MyTasksPage({Key? key}) : super(key: key);
 
   @override
-  State<TaskPage> createState() => _TaskPageState();
+  State<MyTasksPage> createState() => _MyTasksPageState();
 }
 
-class _TaskPageState extends State<TaskPage> {
-  final TaskController _taskController = TaskController();
+class _MyTasksPageState extends State<MyTasksPage> {
+  final MyTasksController _myTasksController = MyTasksController();
 
 @override
   void initState() {
-    _taskController.initTaskPage();
+    _myTasksController.initMyTasksPage();
     super.initState();
   }
 
@@ -29,11 +29,11 @@ class _TaskPageState extends State<TaskPage> {
   Widget streamAppTheme(BuildContext context){
     return StreamBuilder(
       stream: MainController().controllerAppTheme.stream,
-      builder: (context, snapshot) => bodyTaskPage(context),
+      builder: (context, snapshot) => bodyMyTasksPage(context),
     );
   }
 
-  Widget bodyTaskPage(BuildContext context){
+  Widget bodyMyTasksPage(BuildContext context){
     return SafeArea(
       top: false,
       child: Scaffold(
@@ -74,7 +74,7 @@ class _TaskPageState extends State<TaskPage> {
           Expanded(
             child: TextField(
               cursorColor: ColorsApp.widgetsColor,
-              controller: _taskController.textTaskController,
+              controller: _myTasksController.textTaskController,
               style: TextStyle(color: ColorsApp.secondaryColor),
               decoration: InputDecoration(
                 labelText: "Adicione uma tarefa",
@@ -86,7 +86,7 @@ class _TaskPageState extends State<TaskPage> {
           ),
           const SizedBox(width: 12),
           ElevatedButton(
-            onPressed: () => _taskController.addTask(context),
+            onPressed: () => _myTasksController.addTask(context),
             child: const Icon(Icons.add),
             style: ElevatedButton.styleFrom(primary: ColorsApp.widgetsColor, fixedSize: const Size(60, 60)),
           ),
@@ -97,7 +97,7 @@ class _TaskPageState extends State<TaskPage> {
 
   Widget streamTasks(BuildContext context){
     return StreamBuilder<List<Task>>(
-      stream: _taskController.streamControllerTasks,
+      stream: _myTasksController.streamControllerTasks,
       initialData: const [],
       builder: (context, snapshot) => streamSelectedTasks(context, snapshot.data!),
     );
@@ -105,7 +105,7 @@ class _TaskPageState extends State<TaskPage> {
 
   Widget streamSelectedTasks(BuildContext context, List<Task> tasks){
     return StreamBuilder<List<Task>>(
-      stream: _taskController.streamControllerSelectedTasks,
+      stream: _myTasksController.streamControllerSelectedTasks,
       initialData: const [],
       builder: (context, snapshot) => tasksWidget(context, tasks, snapshot.data!),
     );
@@ -143,7 +143,7 @@ class _TaskPageState extends State<TaskPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(toDo.date, style: TextStyle(color: ColorsApp.tertiaryColor)),
+                    Text(toDo.createdDate, style: TextStyle(color: ColorsApp.tertiaryColor)),
                     const SizedBox(height: 4),
                     Text(toDo.task, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: toDo.done ? Colors.green[600] : ColorsApp.secondaryColor, decoration: toDo.done ? TextDecoration.lineThrough : null)),
                   ],
@@ -153,7 +153,7 @@ class _TaskPageState extends State<TaskPage> {
                 side: BorderSide(color: ColorsApp.tertiaryColor, width: 2),
                 activeColor: ColorsApp.widgetsColor,
                 value: toDo.editing,
-                onChanged: (newValue) => _taskController.selectTaskItem(toDo, newValue),
+                onChanged: (newValue) => _myTasksController.selectTaskItem(toDo, newValue),
               ),
             ],
           ),
@@ -172,7 +172,7 @@ class _TaskPageState extends State<TaskPage> {
           Text("${doneTasks.length} de ${tasks.length} tarefas concluídas", style: TextStyle(fontSize: 16, color: ColorsApp.tertiaryColor)),
           ElevatedButton(
             style: ElevatedButton.styleFrom(primary: ColorsApp.widgetsColor),
-            onPressed: () => tasks.isEmpty ? null : _taskController.deleteAllTasks(context),
+            onPressed: () => tasks.isEmpty ? null : _myTasksController.deleteAllTasks(context),
             child: const Text("Limpar tudo"),
           ),
         ],
@@ -184,12 +184,12 @@ class _TaskPageState extends State<TaskPage> {
           TextButton(
             style: TextButton.styleFrom(fixedSize: const Size(80, 0)),
             child: Text("Excluir", textAlign: TextAlign.center, style: TextStyle(color: ColorsApp.secondaryColor)),
-            onPressed: tasks.isEmpty ? null : () => _taskController.deleteSelectedTasks(context, tasks, selectedTasks),
+            onPressed: tasks.isEmpty ? null : () => _myTasksController.deleteSelectedTasks(context, tasks, selectedTasks),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(primary: ColorsApp.widgetsColor),
             child: const Text("Concluir"),
-            onPressed: () => tasks.isEmpty ? null : _taskController.completeSelectedTasks(tasks, selectedTasks),
+            onPressed: () => tasks.isEmpty ? null : _myTasksController.completeSelectedTasks(tasks, selectedTasks),
           ),
         ],
       );

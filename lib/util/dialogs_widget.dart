@@ -1,6 +1,6 @@
   import 'package:flutter/material.dart';
-import 'package:task_list/main_app/main_app_controller.dart';
-import 'package:task_list/util/color_theme.dart';
+import 'package:my_tasks/main_app/main_app_controller.dart';
+import 'package:my_tasks/util/color_theme.dart';
 
   Widget dialogDeleteAllTasksConfirmation(BuildContext context){
     return SimpleDialog(

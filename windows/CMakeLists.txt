@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(task_list LANGUAGES CXX)
+project(my_tasks LANGUAGES CXX)
 
-set(BINARY_NAME "task_list")
+set(BINARY_NAME "my_tasks")
 
 cmake_policy(SET CMP0063 NEW)
 

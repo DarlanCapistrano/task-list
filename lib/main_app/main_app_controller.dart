@@ -1,5 +1,5 @@
 import 'package:rxdart/subjects.dart';
-import 'package:task_list/util/color_theme.dart';
+import 'package:my_tasks/util/color_theme.dart';
 
 class MainController {
   static final MainController _mainController = MainController._();

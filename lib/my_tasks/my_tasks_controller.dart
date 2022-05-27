@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:my_tasks/my_tasks/my_tasks_repository.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:task_list/task/task_model.dart';
-import 'package:task_list/util/color_theme.dart';
-import 'package:task_list/util/dialogs_widget.dart';
+import 'package:my_tasks/my_tasks/my_tasks_model.dart';
+import 'package:my_tasks/util/color_theme.dart';
+import 'package:my_tasks/util/dialogs_widget.dart';
 
-class TaskController {
+class MyTasksController {
 
-  void closeTaskController(){
+  final MyTasksRepository _myTasksRepository = MyTasksRepository();
+
+  void closeMyTaskController(){
     _controllerTasks.close();
+    _controllerSelectedTasks.close();
   }
 
   final TextEditingController textTaskController = TextEditingController();
@@ -19,28 +22,29 @@ class TaskController {
   final BehaviorSubject<List<Task>> _controllerSelectedTasks = BehaviorSubject<List<Task>>();
   Stream<List<Task>> get streamControllerSelectedTasks => _controllerSelectedTasks.stream;
 
-  void initTaskPage(){
-    _controllerTasks.sink.add([]);
+  Future<void> initMyTasksPage() async{
+    await _myTasksRepository.initRepository();
+    var tasks = await _myTasksRepository.findAllTasks();
+    _controllerTasks.sink.add(tasks);
     _controllerSelectedTasks.sink.add([]);
   }
 
-  void addTask(BuildContext context){
-    if(textTaskController.text.isNotEmpty){
-      var tasks = _controllerTasks.stream.value;
-      var dateFormat = DateFormat("dd/MM/yyyy hh:mm").format(DateTime.now());
-      tasks.add(Task(date: dateFormat, task: textTaskController.text, done: false));
+  Future<void> addTask(BuildContext context) async{
+    if(textTaskController.text.trim().isNotEmpty){
+      await _myTasksRepository.insertTask(textTaskController.text);
+      List<Task> tasks = await _myTasksRepository.findAllTasks();
       _controllerTasks.sink.add(tasks);
       textTaskController.clear();
     }
     ScaffoldMessenger.of(context).clearSnackBars();
   }
 
-  void deleteSelectedTasks(BuildContext context, List<Task> oldTasks, List<Task> selectedTasks){
-    List<Task> updatedTasks = []; updatedTasks.addAll(oldTasks);
+  Future<void> deleteSelectedTasks(BuildContext context, List<Task> oldTasks, List<Task> selectedTasks) async{
     for(var task in selectedTasks) {
-      updatedTasks.remove(task);
+      await _myTasksRepository.deleteTask(task);
     }
-    _controllerTasks.sink.add(updatedTasks);
+    List<Task> tasks = await _myTasksRepository.findAllTasks();
+    _controllerTasks.sink.add(tasks);
     _controllerSelectedTasks.sink.add([]);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -50,8 +54,11 @@ class TaskController {
         action: SnackBarAction(
           textColor: ColorsApp.widgetsColor,
           label: "Desfazer",
-          onPressed: () {
-            _controllerTasks.sink.add(oldTasks);
+          onPressed: () async {
+            await _myTasksRepository.reinsertDeletedTasks(selectedTasks);
+            // here
+            // tasks = await _myTasksRepository.findAllTasks();
+            _controllerTasks.sink.add(tasks);
             _controllerSelectedTasks.sink.add(selectedTasks);
           },
         ),
@@ -59,22 +66,19 @@ class TaskController {
     );
   }
 
-  void completeSelectedTasks(List<Task> tasks, List<Task> selectedTasks){
-    for(var task in tasks){
-      for(var selectedTask in selectedTasks){
-        if(task == selectedTask){
-          task.done = true;
-          task.editing = false;
-        }
-      }
+  Future<void> completeSelectedTasks(List<Task> tasks, List<Task> selectedTasks) async{
+    for(var selectedTask in selectedTasks){
+      await _myTasksRepository.completeTask(selectedTask);
     }
+    List<Task> tasks = await _myTasksRepository.findAllTasks();
     _controllerTasks.sink.add(tasks);
     _controllerSelectedTasks.sink.add([]);
   }
 
   Future<void> deleteAllTasks(BuildContext context) async {
-    bool? deleteTasks = await showDialog(context: context, builder: (_) => dialogDeleteAllTasksConfirmation(context));
-    if(deleteTasks ?? false){
+    bool? delete = await showDialog(context: context, builder: (_) => dialogDeleteAllTasksConfirmation(context));
+    if(delete ?? false){
+      _myTasksRepository.deleteAllTasks();
       _controllerTasks.sink.add([]);
     }
   }
@@ -82,7 +86,7 @@ class TaskController {
   void selectTaskItem(Task task, bool? editing){
     var selectedItems = _controllerSelectedTasks.stream.value;
       task.editing = editing ?? false;
-    if(editing ?? false){
+    if(task.editing){
       selectedItems.add(task);
     } else{
       selectedItems.remove(task);

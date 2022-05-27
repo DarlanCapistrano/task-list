@@ -1,6 +1,6 @@
 {
-    "name": "task_list",
-    "short_name": "task_list",
+    "name": "my_tasks",
+    "short_name": "my_tasks",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
