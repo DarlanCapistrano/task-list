@@ -4,6 +4,7 @@ import 'package:my_tasks/my_tasks/my_tasks_controller.dart';
 import 'package:my_tasks/my_tasks/my_tasks_model.dart';
 import 'package:my_tasks/util/color_theme.dart';
 import 'package:my_tasks/util/dialogs_widget.dart';
+import 'package:my_tasks/util/util_widgets.dart';
 
 class MyTasksPage extends StatefulWidget {
   const MyTasksPage({Key? key}) : super(key: key);
@@ -35,7 +36,6 @@ class _MyTasksPageState extends State<MyTasksPage> {
 
   Widget bodyMyTasksPage(BuildContext context){
     return SafeArea(
-      top: false,
       child: Scaffold(
         backgroundColor: ColorsApp.primaryColor,
         body: Padding(
@@ -68,7 +68,7 @@ class _MyTasksPageState extends State<MyTasksPage> {
 
   Widget addTaskWidgets(BuildContext context){
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.only(top: 16),
       child: Row(
         children: [
           Expanded(
@@ -82,6 +82,7 @@ class _MyTasksPageState extends State<MyTasksPage> {
                 enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorsApp.secondaryColor)),
                 focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: ColorsApp.secondaryColor)),
               ),
+              onSubmitted: (text) => _myTasksController.addTask(context),
             ),
           ),
           const SizedBox(width: 12),
@@ -98,12 +99,12 @@ class _MyTasksPageState extends State<MyTasksPage> {
   Widget streamTasks(BuildContext context){
     return StreamBuilder<List<Task>>(
       stream: _myTasksController.streamControllerTasks,
-      initialData: const [],
-      builder: (context, snapshot) => streamSelectedTasks(context, snapshot.data!),
+      builder: (context, snapshot) => snapshot.data != null ? streamSelectedTasks(context, snapshot.data!) : Expanded(child: UtilWidget.loadingWidget()),
     );
   }
 
   Widget streamSelectedTasks(BuildContext context, List<Task> tasks){
+    tasks.sort(((a, b) => a.createdDate.compareTo(b.createdDate)));
     return StreamBuilder<List<Task>>(
       stream: _myTasksController.streamControllerSelectedTasks,
       initialData: const [],
@@ -134,31 +135,34 @@ class _MyTasksPageState extends State<MyTasksPage> {
   Widget toDoItem(BuildContext context, Task toDo){
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(toDo.createdDate, style: TextStyle(color: ColorsApp.tertiaryColor)),
-                    const SizedBox(height: 4),
-                    Text(toDo.task, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: toDo.done ? Colors.green[600] : ColorsApp.secondaryColor, decoration: toDo.done ? TextDecoration.lineThrough : null)),
-                  ],
+        InkWell(
+          onTap: () => _myTasksController.selectTaskItem(toDo, !toDo.editing),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(toDo.createdDate, style: TextStyle(color: ColorsApp.tertiaryColor)),
+                      const SizedBox(height: 4),
+                      Text(toDo.task, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: toDo.done ? Colors.green[600] : ColorsApp.secondaryColor, decoration: toDo.done ? TextDecoration.lineThrough : null)),
+                    ],
+                  ),
                 ),
-              ),
-              Checkbox(
-                side: BorderSide(color: ColorsApp.tertiaryColor, width: 2),
-                activeColor: ColorsApp.widgetsColor,
-                value: toDo.editing,
-                onChanged: (newValue) => _myTasksController.selectTaskItem(toDo, newValue),
-              ),
-            ],
+                Checkbox(
+                  side: BorderSide(color: ColorsApp.tertiaryColor, width: 2),
+                  activeColor: ColorsApp.widgetsColor,
+                  value: toDo.editing,
+                  onChanged: (newValue) => _myTasksController.selectTaskItem(toDo, newValue),
+                ),
+              ],
+            ),
           ),
         ),
-        Container(height: 1, width: double.maxFinite, color: Colors.grey[300], margin: const EdgeInsets.all(12)),
+        Container(height: 1, width: double.maxFinite, color: Colors.grey[300]),
       ],
     );
   }
