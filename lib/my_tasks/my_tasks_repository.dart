@@ -15,7 +15,7 @@ class MyTasksRepository {
   Future<void> insertTask(String task) async{
     await _database.insert("tasks", {
       "task" : task,
-      "createdDate" : DateFormat("dd/MM/yyyy hh:mm").format(DateTime.now()),
+      "createdDate" : DateFormat("dd/MM/yyyy hh:mm:ss").format(DateTime.now()),
       "done" : 0,
     });
   }
@@ -23,10 +23,9 @@ class MyTasksRepository {
   Future<void> reinsertDeletedTasks(List<Task> tasks) async{
     for(var task in tasks){
       await _database.insert("tasks", {
-        "id": task.id,
-        "task": task,
+        "task": task.task,
         "createdDate": task.createdDate,
-        "done": task.done,
+        "done": task.done ? 1 : 0,
       });
     }
   }

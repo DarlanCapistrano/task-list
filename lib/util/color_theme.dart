@@ -3,24 +3,24 @@
 import 'package:flutter/material.dart';
 
 class ColorsApp{
-  static ColorTheme colorAppTheme = ColorTheme.white;
+  static AppTheme colorAppTheme = AppTheme.white;
   static Color dialogColor = Colors.white;
   static Color primaryColor = Colors.white;
   static Color secondaryColor = Colors.black;
   static Color tertiaryColor = Colors.grey[600]!;
   static Color widgetsColor = Colors.red;
 
-  static void chooseAppTheme(ColorTheme theme){
+  static void chooseAppTheme(AppTheme theme){
     switch(theme){
-      case ColorTheme.white:
-        colorAppTheme = ColorTheme.white;
+      case AppTheme.white:
+        colorAppTheme = AppTheme.white;
         dialogColor = Colors.white;
         primaryColor = Colors.white;
         secondaryColor = Colors.black;
         tertiaryColor = Colors.grey[600]!;
       break;
-      case ColorTheme.dark:
-        colorAppTheme = ColorTheme.dark;
+      case AppTheme.dark:
+        colorAppTheme = AppTheme.dark;
         dialogColor = Color(0xFF3D3A3A);
         primaryColor = Color(0xFF212121);
         secondaryColor = Colors.white;
@@ -31,7 +31,7 @@ class ColorsApp{
   }
 }
 
-enum ColorTheme {
+enum AppTheme {
   dark,
   white,
 }

@@ -51,15 +51,15 @@ import 'package:my_tasks/util/color_theme.dart';
           Column(
             children: [
               InkWell(
-                onTap: () => setState(() => MainController().chooseAppTheme(ColorTheme.white)),
+                onTap: () => setState(() => MainController().chooseAppTheme(AppTheme.white)),
                 child: Row(
                   children: [
                     SizedBox(
                       width: 45,
-                      child: RadioListTile<ColorTheme>(
+                      child: RadioListTile<AppTheme>(
                         activeColor: ColorsApp.widgetsColor,
                         contentPadding: const EdgeInsets.all(0),
-                        value: ColorTheme.white,
+                        value: AppTheme.white,
                         groupValue: ColorsApp.colorAppTheme,
                         onChanged: (theme) => setState(() => MainController().chooseAppTheme(theme!)),
                       ),
@@ -69,15 +69,15 @@ import 'package:my_tasks/util/color_theme.dart';
                 ),
               ),
               InkWell(
-                onTap: () => setState(() => MainController().chooseAppTheme(ColorTheme.dark)),
+                onTap: () => setState(() => MainController().chooseAppTheme(AppTheme.dark)),
                 child: Row(
                   children: [
                     SizedBox(
                       width: 45,
-                      child: RadioListTile<ColorTheme>(
+                      child: RadioListTile<AppTheme>(
                         activeColor: ColorsApp.widgetsColor,
                         contentPadding: const EdgeInsets.all(0),
-                        value: ColorTheme.dark,
+                        value: AppTheme.dark,
                         groupValue: ColorsApp.colorAppTheme,
                         onChanged: (theme) => setState(() => MainController().chooseAppTheme(theme!)),
                       ),

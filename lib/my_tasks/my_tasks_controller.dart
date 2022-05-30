@@ -30,8 +30,9 @@ class MyTasksController {
   }
 
   Future<void> addTask(BuildContext context) async{
-    if(textTaskController.text.trim().isNotEmpty){
-      await _myTasksRepository.insertTask(textTaskController.text);
+    var text = textTaskController.text.trim();
+    if(text.isNotEmpty){
+      await _myTasksRepository.insertTask(text);
       List<Task> tasks = await _myTasksRepository.findAllTasks();
       _controllerTasks.sink.add(tasks);
       textTaskController.clear();
@@ -46,6 +47,7 @@ class MyTasksController {
     List<Task> tasks = await _myTasksRepository.findAllTasks();
     _controllerTasks.sink.add(tasks);
     _controllerSelectedTasks.sink.add([]);
+    ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 5),
@@ -56,10 +58,9 @@ class MyTasksController {
           label: "Desfazer",
           onPressed: () async {
             await _myTasksRepository.reinsertDeletedTasks(selectedTasks);
-            // here
-            // tasks = await _myTasksRepository.findAllTasks();
+            tasks = await _myTasksRepository.findAllTasks();
             _controllerTasks.sink.add(tasks);
-            _controllerSelectedTasks.sink.add(selectedTasks);
+            _controllerSelectedTasks.sink.add([]);
           },
         ),
       ),
